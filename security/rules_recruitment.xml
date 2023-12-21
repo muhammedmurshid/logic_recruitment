@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="recruitment_rule_for_head" model="ir.rule">
+        <field name="name">head recruitment rule</field>
+        <field name="model_id" ref="model_logic_recruitment_form"/>
+        <field name="domain_force">['|',('manager_id.user_id.id', '=', user.id), ('create_uid.id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('logic_recruitment.group_recruitment_head'))]"/>
+    </record>
+</odoo>

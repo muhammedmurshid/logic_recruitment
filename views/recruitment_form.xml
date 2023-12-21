@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="model_logic_recruitment_form_view" model="ir.ui.view">
+        <field name="name">Recruitment</field>
+        <field name="model">logic.recruitment.form</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Types">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                    <button name="action_create_job_position" type="object" class="oe_highlight"
+                            string="Create Recruitment" states="draft"
+                            groups="logic_recruitment.group_recruitment_head"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box" attrs="{'invisible':[('state','=','draft')]}">
+                        <button class="oe_stat_button" type="object" name="get_current_recruitment_status"
+                                icon="fa-search">
+                            <field string="Recruitment" name="recruitment_smart_count" widget="statinfo"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="job_position" placeholder="Job position" required="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="department_id" options="{'no_create':True}"/>
+                            <field name="designation_id"/>
+                            <field name="manager_id"/>
+                            <field name="company_id"/>
+
+                        </group>
+                        <group>
+                            <field name="no_of_recruitment"/>
+                            <field name="date"/>
+                            <field name="expected_date"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids" options="{'post_refresh': 'recipients'}"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_view_search" model="ir.ui.view">
+        <field name="model">logic.recruitment.form</field>
+        <field name="arch" type="xml">
+            <search string="Views">
+                <filter string="Active" name="active" domain="[('active', '=',True)]"/>
+                <filter string="Inactive" name="inactive" domain="[('active', '=',False)]"/>
+
+            </search>
+        </field>
+    </record>
+
+
+    <record id="model_recruitment_list_view" model="ir.ui.view">
+        <field name="name">Recruitments</field>
+        <field name="model">logic.recruitment.form</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="date"/>
+                <field name="job_position"/>
+                <field name="department_id"/>
+                <field name="designation_id"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'"
+                       decoration-info="state == 'draft'"/>
+            </tree>
+
+        </field>
+    </record>
+    <record id="server_action_archive" model="ir.actions.server">
+        <field name="name">Archive</field>
+        <field name="model_id" ref="logic_recruitment.model_logic_recruitment_form"/>
+        <field name="binding_model_id" ref="logic_recruitment.model_logic_recruitment_form"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_archive()</field>
+    </record>
+
+    <record id="logic_record_id_recruitment" model="ir.ui.view">
+        <field name="name">record.id.recruitment.inherited</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr.view_hr_job_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='company_id']"
+                   position="after">
+                <field name="logic_recruitment_id" invisible="1"/>
+
+            </xpath>
+
+        </field>
+    </record>
+    <record id="server_action_unarchive" model="ir.actions.server">
+        <field name="name">Unarchive</field>
+        <field name="model_id" ref="logic_recruitment.model_logic_recruitment_form"/>
+        <field name="binding_model_id" ref="logic_recruitment.model_logic_recruitment_form"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_unarchive()</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="model_logic_recruitment_action">
+        <field name="name">Recruitment</field>
+        <field name="res_model">logic.recruitment.form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem name="Logic Recruitment"
+              id="model_logic_recruitment_form_main_menu"
+              web_icon="logic_recruitment/static/description/icon.png"
+              sequence="1"/>
+
+    <menuitem name="Recruitment"
+              id="model_recruitment_menu"
+              action="model_logic_recruitment_action"
+              parent="model_logic_recruitment_form_main_menu"
+              sequence="2"/>
+
+
+</odoo>
