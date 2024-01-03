@@ -6,7 +6,7 @@ class LogicRecruitmentForm(models.Model):
     _name = 'logic.recruitment.form'
     _description = 'Logic Recruitment Form'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _rec_name = 'department_id'
+    _rec_name = 'display_name'
 
     designation_id = fields.Many2one('hr.job', string='Designation')
     manager_id = fields.Many2one('hr.employee', string='Manager', related='department_id.manager_id')
@@ -19,10 +19,14 @@ class LogicRecruitmentForm(models.Model):
         ('draft', 'Draft'), ('hr_approval', 'HR Approval'), ('done', 'Done'), ('rejected', 'Rejected')
     ], default='draft', string='Status', tracking=1)
 
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = rec.job_position + ' - ' + 'for - ' + str(rec.department_id.name)
+
     @api.onchange('date')
     def _on_change_job_position(self):
         dep = []
-        print(self.env.user.name,'user')
+        print(self.env.user.name, 'user')
         if self.date:
             department1 = self.env['hr.department'].sudo().search([('manager_id', '=', self.env.user.employee_id.id)])
             for rec in department1:
@@ -50,6 +54,13 @@ class LogicRecruitmentForm(models.Model):
     def action_create_job_position(self):
         print('lll')
         self.state = 'hr_approval'
+        ss = self.env['logic.recruitment.form'].search([])
+
+        users = ss.env.ref('logic_recruitment.group_recruitment_hr_manager').users
+        for j in users:
+            self.activity_schedule('logic_recruitment.recruitment_activity_for_hr_manager', user_id=j.id,
+                                   note=f'Job recruitment record has been created {self.create_uid.name}. Your decision to approve or reject is awaited')
+
     active = fields.Boolean(string='Active', default=True)
 
     def action_hr_approval(self):
@@ -63,7 +74,11 @@ class LogicRecruitmentForm(models.Model):
             'is_published': True
 
         })
-        self.write({'state': 'done'})
+        self.sudo().write({'state': 'done'})
+        activity_id = self.env['mail.activity'].search(
+            [('res_id', '=', self.id), ('user_id', '=', self.env.user.id), (
+                'activity_type_id', '=', self.env.ref('logic_recruitment.recruitment_activity_for_hr_manager').id)])
+        activity_id.action_feedback(feedback=f'approved.')
         return {
             'effect': {
                 'fadeout': 'slow',
@@ -79,7 +94,11 @@ class LogicRecruitmentForm(models.Model):
         self.write({'active': True})
 
     def action_rejected_recruitment(self):
-        self.write({'state': 'rejected'})
+        activity_id = self.env['mail.activity'].search(
+            [('res_id', '=', self.id), ('user_id', '=', self.env.user.id), (
+                'activity_type_id', '=', self.env.ref('logic_recruitment.recruitment_activity_for_hr_manager').id)])
+        activity_id.action_feedback(feedback=f'rejected.')
+        self.sudo().write({'state': 'rejected'})
 
     def get_current_recruitment_status(self):
         self.ensure_one()

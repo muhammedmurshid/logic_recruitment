@@ -8,6 +8,7 @@
         'security/ir.model.access.csv',
         'security/rules_recruitment.xml',
         'views/recruitment_form.xml',
+        'data/activity.xml',
         # 'views/results_form.xml',
         # 'views/web_form_results.xml',
         # 'views/result_link.xml',

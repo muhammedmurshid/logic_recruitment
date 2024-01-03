@@ -23,11 +23,18 @@
                             <field string="Recruitment" name="recruitment_smart_count" widget="statinfo"/>
                         </button>
                     </div>
+                    <widget name="web_ribbon" title="Approved" bg_color="bg-success"
+                            attrs="{'invisible': [('state', '!=', 'done')]}"/>
+                    <widget name="web_ribbon" title="hr approval" bg_color="bg-primary"
+                            attrs="{'invisible': [('state', '!=', 'hr_approval')]}"/>
+                    <widget name="web_ribbon" title="rejected" bg_color="bg-danger"
+                            attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
                     <div class="oe_title">
                         <h1>
                             <field name="job_position" placeholder="Job position" required="1"/>
                         </h1>
                     </div>
+
 
                     <group>
                         <group>

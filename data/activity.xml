@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="recruitment_activity_for_hr_manager" model="mail.activity.type">
+        <field name="name">Recruitment Activity For HR Manager</field>
+        <field name="res_model_id" ref="logic_recruitment.model_logic_recruitment_form"/>
+        <field name="delay_count">30</field>
+    </record>
+</odoo>

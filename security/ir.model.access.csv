@@ -2,4 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 
 access_recruitment_head,access_details,model_logic_recruitment_form,logic_recruitment.group_recruitment_head,1,1,1,1
 access_recruitment_admin,access_details,model_logic_recruitment_form,logic_recruitment.group_recruitment_admin,1,1,1,1
-access_recruitment_hr,access_details,model_logic_recruitment_form,logic_recruitment.group_recruitment_hr_manager,1,0,1,0
+access_recruitment_hr,access_details,model_logic_recruitment_form,logic_recruitment.group_recruitment_hr_manager,1,1,1,1
