@@ -16,7 +16,7 @@ class LogicRecruitmentForm(models.Model):
     job_position = fields.Char(string='Job Position')
     no_of_recruitment = fields.Integer(string='No of Recruitment')
     state = fields.Selection([
-        ('draft', 'Draft'), ('done', 'Done'),
+        ('draft', 'Draft'), ('hr_approval', 'HR Approval'), ('done', 'Done'), ('rejected', 'Rejected')
     ], default='draft', string='Status', tracking=1)
 
     @api.onchange('date')
@@ -39,10 +39,7 @@ class LogicRecruitmentForm(models.Model):
         return {'domain': {'department_id': domain}}
 
     department_id = fields.Many2one('hr.department', string='Department', domain=_on_change_job_position)
-
-
-
-
+    remarks = fields.Text(string='Remarks')
 
     @api.depends('date')
     def _on_change_date(self):
@@ -52,12 +49,18 @@ class LogicRecruitmentForm(models.Model):
 
     def action_create_job_position(self):
         print('lll')
+        self.state = 'hr_approval'
+    active = fields.Boolean(string='Active', default=True)
+
+    def action_hr_approval(self):
         job = self.env['hr.job'].sudo().create({
             'name': self.job_position,
             'company_id': self.company_id.id,
             'department_id': self.department_id.id,
             'no_of_recruitment': self.no_of_recruitment,
-            'logic_recruitment_id': self.id
+            'logic_recruitment_id': self.id,
+            'can_publish': True,
+            'is_published': True
 
         })
         self.write({'state': 'done'})
@@ -68,13 +71,15 @@ class LogicRecruitmentForm(models.Model):
                 'type': 'rainbow_man',
             }
         }
-    active = fields.Boolean(string='Active', default=True)
 
     def action_archive(self):
         self.write({'active': False})
 
     def action_unarchive(self):
         self.write({'active': True})
+
+    def action_rejected_recruitment(self):
+        self.write({'state': 'rejected'})
 
     def get_current_recruitment_status(self):
         self.ensure_one()

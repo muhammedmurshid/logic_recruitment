@@ -11,6 +11,10 @@
                     <button name="action_create_job_position" type="object" class="oe_highlight"
                             string="Create Recruitment" states="draft"
                             groups="logic_recruitment.group_recruitment_head"/>
+                    <button name="action_hr_approval" type="object" class="oe_highlight" states="hr_approval"
+                            groups="logic_recruitment.group_recruitment_hr_manager" string="Approve"/>
+                    <button string="Reject" name="action_rejected_recruitment" type="object" states="hr_approval"
+                            groups="logic_recruitment.group_recruitment_hr_manager"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box" attrs="{'invisible':[('state','=','draft')]}">
@@ -37,6 +41,7 @@
                             <field name="no_of_recruitment"/>
                             <field name="date"/>
                             <field name="expected_date"/>
+                            <field name="remarks"/>
                         </group>
                     </group>
                 </sheet>
@@ -71,7 +76,8 @@
                 <field name="department_id"/>
                 <field name="designation_id"/>
                 <field name="state" widget="badge" decoration-success="state == 'done'"
-                       decoration-info="state == 'draft'"/>
+                       decoration-info="state == 'draft'" decoration-danger="state == 'rejected'"
+                       decoration-primary="state == 'hr_approval'"/>
             </tree>
 
         </field>
